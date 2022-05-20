@@ -7,6 +7,8 @@ function EditCandidate() {
   const localData = JSON.parse(localStorage.getItem("data"));
   console.log([localData[id]]);
   const [flag, setFlag] = useState(false);
+  const [error, setError] = useState({});
+  const [expErrors, setExpErrors] = useState({});
   const data = {
     countries: [
       {
@@ -86,23 +88,79 @@ function EditCandidate() {
       })
     );
   };
+  const validate = (formData) => {
+    const err = {};
+    if (!formData.fname) {
+      err.fname = "first name is required";
+    }
+    if (!formData.lname) {
+      err.lname = "last name is required";
+    }
+    if (!formData.email) {
+      err.email = "email is required";
+    }
+    if (!formData.gender) {
+      err.gender = "gender is required";
+    }
+    if (!formData.address) {
+      err.address = "address is required";
+    }
+    if (!formData.country) {
+      err.country = "country is required";
+    }
+    if (!formData.state) {
+      err.state = "state is required";
+    }
+    if (!formData.pin) {
+      err.pin = "pin is required";
+    }
+    setError(err);
+    return err;
+  };
+  const validateExp = (exp) => {
+    const error = [];
+    let flag = false;
+    exp.map((ex, i) => {
+      if (ex.company == "" || ex.duration == "" || ex.desc == "") {
+        error.push({ error: "All Fields are required" });
+        console.log(error);
+      } else {
+        error.push({ error: "" });
+      }
+    });
+    setExpErrors(error);
+    console.log(error);
+    error.map((v, i) => {
+      if (v.error === "") flag = true;
+      else flag = false;
+    });
 
+    return flag;
+  };
   const submitForm = () => {
     setCandidate({ ...candidate, experience: experience });
-    setFlag(true);
-    //     localStorage.setItem("data",JSON.stringify(candidate))
-    //    navigate("/list")
+    const err = validate(candidate);
+    const validExperience = validateExp(experience);
+    console.log(validExperience);
+    setCandidate({ ...candidate, experience: experience });
+
+    if (candidate.languages.length < 3) {
+      alert("minimun 3 skills are required");
+    } else if (experience.length < 2) {
+      alert("minimun 2 experiences are required");
+    } else if (experience.length > 5) {
+      alert("experiences should be less than 5");
+    } else if (Object.keys(err).length === 0 && validExperience) {
+      setFlag(true);
+    }
+    // setFlag(true);
   };
 
   useEffect(() => {
     if (flag) {
       const temp = JSON.parse(localStorage.getItem("data")) || [];
-      console.log(id);
       temp.splice(id, 1);
-      console.log(temp);
-      console.log(candidate);
       temp.splice(id, 0, candidate);
-      console.log(temp);
       localStorage.setItem("data", JSON.stringify(temp));
       navigate("/list");
     }
@@ -135,6 +193,7 @@ function EditCandidate() {
                     }
                     required
                   />
+                  <span class="text-danger fw-normal">{error.fname}</span>
                 </div>
 
                 <div class="col-sm-6">
@@ -153,6 +212,7 @@ function EditCandidate() {
                     required
                   />
                 </div>
+                <span class="text-danger fw-normal">{error.lname}</span>
 
                 <div class="col-12">
                   <label class="form-label">Gender</label>
@@ -209,6 +269,7 @@ function EditCandidate() {
                       <label class="form-check-label">Other</label>
                     </div>
                   </div>
+                  <span class="text-danger fw-normal">{error.gender}</span>
                 </div>
 
                 <div class="col-12">
@@ -227,6 +288,7 @@ function EditCandidate() {
                     }
                     required
                   />
+                  <span class="text-danger fw-normal">{error.email}</span>
                 </div>
 
                 <div class="col-12">
@@ -244,6 +306,7 @@ function EditCandidate() {
                     }
                     required
                   ></textarea>
+                  <span class="text-danger fw-normal">{error.address}</span>
                 </div>
 
                 <div class="col-md-5">
@@ -263,6 +326,7 @@ function EditCandidate() {
                       );
                     })}
                   </select>
+                  <span class="text-danger fw-normal">{error.country}</span>
                 </div>
 
                 <div class="col-md-4">
@@ -283,6 +347,7 @@ function EditCandidate() {
                       );
                     })}
                   </select>
+                  <span class="text-danger fw-normal">{error.state}</span>
                 </div>
 
                 <div class="col-md-3">
@@ -300,6 +365,7 @@ function EditCandidate() {
                     }
                   />
                 </div>
+                <span class="text-danger fw-normal">{error.pin}</span>
               </div>
 
               <hr class="my-4" />
@@ -453,6 +519,9 @@ function EditCandidate() {
                             </div>
                           </div>
                         </div>
+                        <span className="text-danger fw-normal">
+                          {expErrors[i]?.error}
+                        </span>
                       </div>
                     );
                   })}
