@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 function ListCandidate() {
-  const storageData = JSON.parse(localStorage.getItem("data"));
+  const Data = JSON.parse(localStorage.getItem("data"));
+  const [storageData, setStorageData] = useState(Data);
   console.log(storageData);
-  const sum = 0;
+  const deleteCandidate = (id) => {
+    const temp = storageData.filter((v, i) => i !== id);
+    console.log(temp);
+    localStorage.setItem("data", JSON.stringify(temp));
+    setStorageData(temp);
+  };
   return (
     <div>
       <body class="bg-light">
@@ -12,7 +19,11 @@ function ListCandidate() {
             <div class="py-5">
               <h2>
                 Candidates List
-                <button class="btn btn-primary float-end">Add Candidate</button>
+                <Link to="/">
+                  <button class="btn btn-primary float-end">
+                    Add Candidate
+                  </button>
+                </Link>
               </h2>
             </div>
 
@@ -33,19 +44,27 @@ function ListCandidate() {
                         return (
                           <tr>
                             <td>{id + 1}</td>
-                            <td>{data.fname + "" + data.lname}</td>
+                            <td>{data.fname + " " + data.lname}</td>
                             <td>{data.email}</td>
                             <td>{data.languages.length}</td>
                             <td>
-                              {data.experience.map((v, i) => {
-                                v.map((val, index) => {
-                                  return sum + val.duration;
-                                });
-                              })}
+                              {data.experience.reduce(
+                                (previousValue, currentValue) => {
+                                  return previousValue + +currentValue.duration;
+                                },
+                                0
+                              )}
                             </td>
                             <td>
-                              <a href="#">Edit</a>
-                              <a href="#" class="text-danger ms-2">
+                              <Link to={`/edit/${id}`}>
+                                <a>Edit</a>
+                              </Link>
+
+                              <a
+                                href="#"
+                                class="text-danger ms-2"
+                                onClick={() => deleteCandidate(id)}
+                              >
                                 Delete
                               </a>
                             </td>

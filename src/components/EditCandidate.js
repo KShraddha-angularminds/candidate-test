@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-function AddCandidate() {
+function EditCandidate() {
   const navigate = useNavigate();
-
+  const { id } = useParams();
+  const localData = JSON.parse(localStorage.getItem("data"));
+  console.log([localData[id]]);
   const [flag, setFlag] = useState(false);
   const data = {
     countries: [
@@ -21,26 +23,23 @@ function AddCandidate() {
       { name: "Itali", states: ["E"] },
     ],
   };
-  const [candidate, setCandidate] = useState({
-    languages: [],
-    experience: [],
-  });
+  const [candidate, setCandidate] = useState(localData[id]);
 
-  const [selectedCountry, setSelectedCountry] = useState();
-  const [selectedState, setSelectedState] = useState();
-  const temp = [
-    {
-      company: "",
-      duration: 0,
-      desc: "",
-    },
-    {
-      company: "",
-      duration: 0,
-      desc: "",
-    },
-  ];
-  const [experience, setExperience] = useState(temp);
+  const [selectedCountry, setSelectedCountry] = useState(candidate.country);
+  const [selectedState, setSelectedState] = useState(candidate.state);
+  //   const temp = [
+  //     {
+  //       company: "",
+  //       duration: 0,
+  //       desc: "",
+  //     },
+  //     {
+  //       company: "",
+  //       duration: 0,
+  //       desc: "",
+  //     },
+  //   ];
+  const [experience, setExperience] = useState(candidate.experience);
 
   const availableState = data.countries.find((c) => c.name === selectedCountry);
 
@@ -78,6 +77,7 @@ function AddCandidate() {
   };
 
   const handleExperience = (i, e) => {
+    console.log("in");
     setExperience((prev) =>
       prev.map((v, index) => {
         return i === index ? { ...v, [e.target.name]: e.target.value } : v;
@@ -97,7 +97,12 @@ function AddCandidate() {
   useEffect(() => {
     if (flag) {
       const temp = JSON.parse(localStorage.getItem("data")) || [];
-      temp.push(candidate);
+      console.log(id);
+      temp.splice(id, 1);
+      console.log(temp);
+      console.log(candidate);
+      temp.splice(id, 0, candidate);
+      console.log(temp);
       localStorage.setItem("data", JSON.stringify(temp));
       navigate("/list");
     }
@@ -121,6 +126,7 @@ function AddCandidate() {
                     type="text"
                     name="fname"
                     class="form-control"
+                    value={candidate.fname}
                     onChange={(e) =>
                       setCandidate({
                         ...candidate,
@@ -137,6 +143,7 @@ function AddCandidate() {
                     type="text"
                     name="lname"
                     class="form-control"
+                    value={candidate.lname}
                     onChange={(e) =>
                       setCandidate({
                         ...candidate,
@@ -162,6 +169,7 @@ function AddCandidate() {
                             [e.target.name]: e.target.value,
                           })
                         }
+                        checked={candidate.gender === "male"}
                         required
                       />
                       <label class="form-check-label">Male</label>
@@ -178,6 +186,7 @@ function AddCandidate() {
                             [e.target.name]: e.target.value,
                           })
                         }
+                        checked={candidate.gender === "female"}
                         required
                       />
                       <label class="form-check-label">Female</label>
@@ -194,6 +203,7 @@ function AddCandidate() {
                             [e.target.name]: e.target.value,
                           })
                         }
+                        checked={candidate.gender === "other"}
                         required
                       />
                       <label class="form-check-label">Other</label>
@@ -207,6 +217,7 @@ function AddCandidate() {
                     type="email"
                     class="form-control"
                     name="email"
+                    value={candidate.email}
                     placeholder="you@example.com"
                     onChange={(e) =>
                       setCandidate({
@@ -224,6 +235,7 @@ function AddCandidate() {
                     class="form-control"
                     name="address"
                     placeholder="1234 Main St"
+                    value={candidate.address}
                     onChange={(e) =>
                       setCandidate({
                         ...candidate,
@@ -279,6 +291,7 @@ function AddCandidate() {
                     type="text"
                     class="form-control"
                     name="pin"
+                    value={candidate.pin}
                     onChange={(e) =>
                       setCandidate({
                         ...candidate,
@@ -307,6 +320,9 @@ function AddCandidate() {
                         name="language"
                         value="Angular"
                         onClick={(e) => handleCheckbox(e)}
+                        checked={candidate.languages.find(
+                          (v, i) => v == "Angular"
+                        )}
                       />
                       <label class="form-check-label">Angular</label>
                     </div>
@@ -317,6 +333,9 @@ function AddCandidate() {
                         name="language"
                         value="React"
                         onClick={(e) => handleCheckbox(e)}
+                        checked={candidate.languages.find(
+                          (v, i) => v == "React"
+                        )}
                       />
                       <label class="form-check-label">React</label>
                     </div>
@@ -327,6 +346,9 @@ function AddCandidate() {
                         name="language"
                         value="Node.JS"
                         onClick={(e) => handleCheckbox(e)}
+                        checked={candidate.languages.find(
+                          (v, i) => v == "Node.JS"
+                        )}
                       />
                       <label class="form-check-label">Node.JS</label>
                     </div>
@@ -337,6 +359,9 @@ function AddCandidate() {
                         name="language"
                         value="JavaScript"
                         onClick={(e) => handleCheckbox(e)}
+                        checked={candidate.languages.find(
+                          (v, i) => v == "JavaScript"
+                        )}
                       />
                       <label class="form-check-label">JavaScript</label>
                     </div>
@@ -347,6 +372,9 @@ function AddCandidate() {
                         name="language"
                         value="Flutter"
                         onClick={(e) => handleCheckbox(e)}
+                        checked={candidate.languages.find(
+                          (v, i) => v == "Flutter"
+                        )}
                       />
                       <label class="form-check-label">Flutter</label>
                     </div>
@@ -357,6 +385,9 @@ function AddCandidate() {
                         name="language"
                         value="Java"
                         onClick={(e) => handleCheckbox(e)}
+                        checked={candidate.languages.find(
+                          (v, i) => v == "Java"
+                        )}
                       />
                       <label class="form-check-label">Java</label>
                     </div>
@@ -391,6 +422,7 @@ function AddCandidate() {
                               <input
                                 type="text"
                                 name="company"
+                                value={v.company}
                                 class="form-control"
                                 onChange={(e) => handleExperience(i, e)}
                               />
@@ -403,6 +435,7 @@ function AddCandidate() {
                               <input
                                 type="number"
                                 name="duration"
+                                value={v.duration}
                                 class="form-control"
                                 onChange={(e) => handleExperience(i, e)}
                               />
@@ -414,6 +447,7 @@ function AddCandidate() {
                               <textarea
                                 class="form-control"
                                 name="desc"
+                                value={v.desc}
                                 onChange={(e) => handleExperience(i, e)}
                               ></textarea>
                             </div>
@@ -458,4 +492,4 @@ function AddCandidate() {
   );
 }
 
-export default AddCandidate;
+export default EditCandidate;
